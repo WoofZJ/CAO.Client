@@ -1,0 +1,8 @@
+{
+    "name": "cao-client",
+    "compatibility_date": "2025-06-10",
+    "assets": {
+        "directory": "./publish/wwwroot",
+        "not_found_handling": "single-page-application"
+    }
+}
