@@ -1,7 +1,11 @@
-﻿@page "/"
+@page "/"
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<div class="flex flex-col lg:flex-row justify-around">
+    <div class="w-full flex flex-col items-center lg:w-3/12 lg:sticky lg:top-22 self-start">
+    </div>
+    <div class="lg:w-8/12 flex flex-col gap-6">
+        <BlogList />
+    </div>
+</div>

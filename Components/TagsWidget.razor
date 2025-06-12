@@ -1,0 +1,13 @@
+@foreach (var tag in Tags)
+{
+    <li>
+        <a href="/tags?tag=@tag" class="badge gap-1 hover:text-error">
+            <Icon Name="tabler:tag" Width="16" Height="16"/>
+            @tag
+        </a>
+    </li>
+}
+
+@code {
+    [Parameter] public IEnumerable<string> Tags { get; set; } = [];
+}
