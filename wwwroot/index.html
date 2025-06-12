@@ -1,19 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CAO.Client</title>
+    <title>CodeArt.Online</title>
     <base href="/" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
 </head>
 
 <body>
-    <div id="app">
+    <!-- html of loading page -->
+    <div id="app"> 
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <h1 class="text-4xl">CodeArt.Online</h1>
+            <div class="flex items-center justify-center gap-2 mt-2">
+                <span class="loading loading-spinner text-error"></span>
+                <span id="startup-loading-text">正在加载</span>
+            </div>
+        </div>
     </div>
 
+    <!-- script of loading page -->
+    <script>
+        const loadingText = document.querySelector('#startup-loading-text');
+        const id = setInterval(() => {
+            const percentage = document.documentElement.style
+                .getPropertyValue('--blazor-load-percentage');
+            if (percentage) {
+                const percentageValue = parseFloat(percentage);
+                loadingText.innerText = `正在加载 (${percentageValue.toFixed(1)}%)`;
+            }
+            if (percentage === '100%') {
+                clearInterval(id);
+            }
+        }, 500);
+    </script>
+
+    <!-- load local theme -->
+    <script>
+        let savedTheme = localStorage.getItem("theme");
+        if (!savedTheme) {
+            savedTheme = window.matchMedia("(prefers-color-scheme: dark)")
+                .matches ? "dark" : "cupcake";
+            localStorage.setItem("theme", savedTheme);
+        }
+        document.documentElement.setAttribute("data-theme", savedTheme);
+    </script>
+
+    <!-- load wasm stuff -->
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 
