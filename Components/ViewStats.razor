@@ -1,0 +1,38 @@
+<div class="stats stashadow border-1 py-1 bg-base-300 border-none items-center">
+    @for (int i = 0; i < 3; ++i)
+    {
+        <div class="stat px-4 py-0">
+            <div class="stat-title">@names[i]</div>
+            <div class="stat-value text-2xl">
+                <span class="@(totalValues[i] == null ? " text-error" : "")">
+                    @FormatNumber(totalValues[i])
+                </span>
+            </div>
+            <div class=" stat-desc">
+                本月:
+                <span class="@(monthlyValues[i] == null ? " text-error" : "")">
+                    @FormatNumber(monthlyValues[i])
+                </span>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    string[] names = ["本页访问量", "本站访问量", "本站访客数"];
+    int?[] totalValues = [null, null, null];
+    int?[] monthlyValues = [null, null, null];
+
+    string FormatNumber(int? number) => number switch
+    {
+        null => "--",
+        (< 1000) => $"{number}",
+        (< 10_000) => $"{number / 1000.0: 0.##}K",
+        (< 100_000) => $"{number / 1000.0: 0.#}K",
+        (< 1_000_000) => $"{number / 1000.0: 0}K",
+        (< 10_000_000) => $"{number / 1_000_000.0: 0.##}M",
+        (< 100_000_000) => $"{number / 1_000_000.0: 0.#}M",
+        (< 1_000_000_000) => $"{number / 1_000_000.0: 0}M",
+        _ => "1B+"
+    };
+}
