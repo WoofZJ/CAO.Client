@@ -1,26 +1,19 @@
-<div class="flex flex-row gap-2 items-center">
-    @if (Text != null)
-    {
-        <span>@Text</span>
-    }
-    @if (ShowDate)
-    {
-        <div class="flex flex-row items-center gap-0.5">
-            <Icon Name="tabler:calendar-month" Width="18" Height="18"/>
-            <span>@UtcDateTime.AddHours(8).ToString("yyyy-MM-dd")</span>
-        </div>
-    }
-    @if (ShowTime)
-    {
-        <div class="flex flex-row items-center gap-0.5">
-            <Icon Name="tabler:clock" Width="18" Height="18"/>
-            <span>@UtcDateTime.AddHours(8).ToString("HH:mm:ss")</span>
-        </div>
-    }
-</div>
+@if (ShowDate)
+{
+    <div class="badge gap-1">
+        <Icon Name="tabler:calendar-month" Width="18" Height="18"/>
+        <span>@UtcDateTime.AddHours(8).ToString("yyyy-MM-dd")</span>
+    </div>
+}
+@if (ShowTime)
+{
+    <div class="badge gap-1">
+        <Icon Name="tabler:clock" Width="18" Height="18"/>
+        <span>@UtcDateTime.AddHours(8).ToString("HH:mm:ss")</span>
+    </div>
+}
 
 @code {
-    [Parameter] public string? Text { get; set; }
     [Parameter] public bool ShowDate { get; set; } = true;
     [Parameter] public bool ShowTime { get; set; } = true;
     [Parameter] public DateTime UtcDateTime { get; set; } = DateTime.Now;

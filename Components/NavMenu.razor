@@ -3,12 +3,17 @@
     ? "menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
     : "menu menu-horizontal px-1 py-0")
 >
-    @foreach (var item in navItems) {
+    @foreach (var item in navItems)
+    {
         <li>
-          <NavLink href="@item.Route" ActiveClass="text-error" Match="NavLinkMatch.All">
-            <Icon Name="@item.IconName" Width="20" Height="20" />
-            @item.Text
-          </NavLink>
+            <NavLink href="@item.Route"
+                     class="text-base"
+                     ActiveClass="text-error"
+                     Match="NavLinkMatch.All"
+            >
+                <Icon Name="@item.IconName" Width="20" Height="20" />
+                @item.Text
+            </NavLink>
         </li>
     }
 </ul>
@@ -24,6 +29,5 @@
         new ("留言板", "/message", "tabler:message-2-heart"),
     ];
 
-    [Parameter]
-    public bool IsMobile { get; set; } = false;
+    [Parameter] public bool IsMobile { get; set; } = false;
 }

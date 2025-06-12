@@ -46,8 +46,9 @@
                 </div>
             </div>
             <Counter startTime="@buildDateTime" />
-            <div class="flex flex-row">
-                <DateTimeWidget UtcDateTime="@buildDateTime" Text="构建于" />
+            <div class="flex flex-row items-end">
+                <span>构建于</span>
+                <DateTimeWidget UtcDateTime="@buildDateTime"/>
             </div>
             <div class="divider m-0 h-1"></div>
         </div>
