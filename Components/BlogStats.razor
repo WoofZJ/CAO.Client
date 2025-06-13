@@ -1,0 +1,49 @@
+<div class="stats-vertical shadow bg-base-200">
+    @foreach (var item in blogStateItems)
+    {
+        <a class="stat hover:bg-base-300 hover:text-error px-24 lg:px-10 xl:px-12" href="@item.Url">
+            <div class="stat-figure">
+                <Icon Name="@item.Icon" Width="32" Height="32" />
+            </div>
+            <div class="stat-title text-sm">@item.Name</div>
+            <div class="stat-value">
+                @if (item.Value.HasValue)
+                {
+                    <span>@item.Value</span>
+                }
+                else
+                {
+                    <span class="text-error">--</span>
+                }
+                <span class="font-normal text-xl">&nbsp;@item.Unit</span>
+            </div>
+            <div class="stat-desc">
+            </div>
+        </a>
+    }
+</div>
+
+@code {
+    class BlogStatItem
+    {
+        public string Name { get; set; }
+        public string Unit { get; set; }
+        public string Icon { get; set; }
+        public string Url { get; set; }
+        public int? Value { get; set; }
+        public string? Description { get; set; }
+
+        public BlogStatItem(string name, string unit, string icon, string url)
+        {
+            Name = name;
+            Unit = unit;
+            Icon = icon;
+            Url = url;
+        }
+    };
+    BlogStatItem[] blogStateItems = [
+        new ("文章", "篇", "tabler:article", "/archive"),
+        new ("标签", "个", "tabler:tags", "/tags"),
+        new ("留言", "条", "tabler:messages", "/messages"),
+    ];
+}
