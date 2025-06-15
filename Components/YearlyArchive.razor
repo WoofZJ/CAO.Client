@@ -1,0 +1,64 @@
+<div class="collapse bg-base-100 border-base-300 border">
+    <input type="checkbox" checked="Open" />
+    <div class="collapse-title font-semibold text-2xl bg-base-200 hover:bg-base-200">
+        @(Year)年: @(YearlyBlogs.Count()) 篇博客
+    </div>
+    <div class="collapse-content px-8">
+        <ul class="timeline timeline-vertical timeline-compact mt-4">
+            @foreach (var (idx, group) in monthlyBlogs.Index())
+            {
+                <li>
+                    @if (idx > 0)
+                    {
+                        <hr />
+                    }
+                    <div class="timeline-middle z-10">
+                        <div class="bg-base-200 w-14 text-center font-bold border-base-300 border-2 py-1 rounded-xl">
+                            @(group.Key)月
+                        </div>
+                    </div>
+                    <ol class="timeline-end timeline-box text-base ml-2">
+                        @foreach (var (id, blog) in group.OrderByDescending(x => x.CreateAt).Index())
+                        {
+                            <li class="flex flex-row items-center gap-2">
+                                <div class="w-12 px-0 border-base-300 text-center text-sm bg-base-200 border-2 rounded-xl">
+                                    @(blog.CreateAt.Day)日
+                                </div>
+                                <a href="@($"/blog/{blog.Slug}")" class="link-hover">
+                                    <h2 class="text-xl font-bold">
+                                        <span class="inline">
+                                            @blog.Title
+                                        </span><span class="inline-block align-middle ml-1">
+                                            <Icon Name="tabler:external-link" Width="20" Height="20" />
+                                        </span>
+                                    </h2>
+                                </a>
+                            </li>
+                        }
+                    </ol>
+                    @if (idx < monthlyBlogs.Count() - 1)
+                    {
+                        <hr />
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public IEnumerable<BlogArchiveItemDto> YearlyBlogs { get; set; } = [];
+    [Parameter]
+    public bool Open { get; set; } = false;
+    [Parameter]
+    public int Year { get; set; } = 0;
+
+    IEnumerable<IGrouping<int, BlogArchiveItemDto>> monthlyBlogs = [];
+
+    protected override void OnParametersSet()
+    {
+        monthlyBlogs = YearlyBlogs.GroupBy(x => x.CreateAt.Month).OrderByDescending(x => x.Key);
+    }
+}

@@ -1,3 +1,44 @@
 @page "/archive"
+@inject BlogService blogService
 
 <PageTitle>Archive</PageTitle>
+@if (!fetched)
+{
+    <Loading Message="加载博客中..." />
+}
+else
+{
+    if (groupedBlogs == null)
+    {
+        <Alert Type="error" Message="服务器暂不可用，过会再来看看吧 ;-;" />
+    }
+    else if (groupedBlogs.Count() == 0)
+    {
+        <Alert Type="info" Message="暂时还没有博客，过几天再来看看吧 >-<" />
+    }
+    else
+    {
+        <ol class="flex flex-col gap-4">
+            @foreach (var (idx, yearGroup) in groupedBlogs.Select((value, idx) => (idx, value)))
+            {
+                <li>
+                    <YearlyArchive Year="@yearGroup.Key" YearlyBlogs="@yearGroup" Open="@(idx == 0)" />
+                </li>
+            }
+        </ol>
+    }
+}
+
+@code {
+    IEnumerable<IGrouping<int, BlogArchiveItemDto>>? groupedBlogs;
+    bool fetched = false;
+    protected override async Task OnInitializedAsync()
+    {
+        var blogArchive = await blogService.GetBlogArchiveAsync();
+        groupedBlogs = blogArchive?
+            .GroupBy(x => x.CreateAt.Year)
+            .OrderByDescending(x => x.Key);
+        fetched = true;
+        StateHasChanged();
+    }
+}
