@@ -46,7 +46,10 @@ public class BlogService(HttpClient httpClient, IMemoryCache cache)
 
     public Task<BlogStatsDto?> GetBlogStatsAsync() =>
         GetWithCacheAsync<BlogStatsDto>("blog-stats", "blog/stats");
-    
+
     public Task<List<BlogArchiveItemDto>?> GetBlogArchiveAsync() =>
         GetWithCacheAsync<List<BlogArchiveItemDto>>("blog-archive", "blog/archive");
+    
+    public Task<TagsDto?> GetTagsAsync() =>
+        GetWithCacheAsync<TagsDto>("blog-tags", "blog/tags");
 }

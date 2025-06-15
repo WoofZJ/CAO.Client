@@ -1,3 +1,115 @@
 @page "/tags"
+@page "/tags#{TagName}"
+@inject BlogService blogService
 
-<PageTitle>Tags</PageTitle>
+<PageTitle>CAO - 标签</PageTitle>
+@if (!fetched)
+{
+    <Loading Message="加载标签中..." />
+}
+else
+{
+    if (tagsDto == null)
+    {
+        <Alert Type="error" Message="服务器暂不可用，过会再来看看吧 ;-;" />
+    }
+    else if (tagsDto.TagDict.Count == 0)
+    {
+        <Alert Type="info" Message="暂时还没有标签，过几天再来看看吧 >-<" />
+    }
+    else
+    {
+        <div tabindex="0" class="collapse collapse-open bg-base-100 border-base-300 border">
+            <div class="collapse-title font-semibold text-2xl bg-base-200">
+                <div class="inline-block align-middle h-full">
+                    <Icon Name="tabler:tags" Width="26" Height="26"/>
+                </div>
+                标签 - 共 @(tagsDto.TagDict.Count()) 个
+            </div>
+            <div class="collapse-content px-8">
+                <div class="flex flex-row flex-wrap items-center justify-center gap-2 mt-4">
+                    @foreach (var tag in tagsDto.TagDict.Keys.OrderBy(x => -tagsDto.TagDict[x].Count()))
+                    {
+                        <button class="btn text-base" onclick="@(() => updateSelectedTag(@tag))">
+                            @tag
+                            <div class="badge badge-lg">
+                                @(tagsDto.TagDict[tag].Count())
+                            </div>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+        @if (SelectedTagName != null)
+        {
+            <div tabindex="0" class="collapse collapse-open bg-base-100 border-base-300 border mt-4">
+                <div class="collapse-title font-semibold text-2xl bg-base-200">
+                    <div class="inline-block align-middle h-full">
+                        <Icon Name="tabler:tag" Width="26" Height="26"/>
+                    </div>
+                    @SelectedTagName - 共 @(tagsDto.TagDict[SelectedTagName].Count()) 篇博客
+                </div>
+                <div class="collapse-content px-8">
+                    <ul class="timeline timeline-vertical timeline-compact mt-4">
+                    @foreach (var (idx, blog) in tagsDto.TagDict[SelectedTagName].OrderByDescending(x => x.CreateAt).Index())
+                    {
+                        <li>
+                        @if (idx > 0)
+                        {
+                            <hr />
+                        }
+                        <div class="timeline-middle w-10 z-10">
+                            <div class="bg-base-200 w-full border-base-300 border-2 text-center py-1 rounded-xl">
+                                @(idx+1)
+                            </div>
+                        </div>
+                        <div class="timeline-end timeline-box flex flex-col text-base ml-2">
+                            <div class="flex flex-row items-center gap-x-3 flex-wrap">
+                                <DateTimeWidget UtcDatetime="@blog.CreateAt" ShowTime="false" />
+                            </div>
+                            <a href="@($"/blog/{blog.Slug}")" class="link-hover">
+                                <h2 class="text-xl font-bold">
+                                    <span class="inline">
+                                        @blog.Title
+                                    </span><span class="inline-block align-middle ml-1">
+                                        <Icon Name="tabler:external-link" Width="20" Height="20" />
+                                    </span>
+                                </h2>
+                            </a>
+                        </div>
+                        @if (idx < tagsDto.TagDict[SelectedTagName].Count() - 1)
+                        {
+                            <hr />
+                        }
+                    </li>
+                    }
+                </ul>
+
+                 </div>
+            </div>
+        }
+    }
+}
+
+@code
+{
+    [Parameter]
+    public string? TagName { get; set; }
+    [SupplyParameterFromQuery(Name = "tag")]
+    public string? SelectedTagName { get; set; }
+
+    TagsDto? tagsDto;
+    bool fetched = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        tagsDto = await blogService.GetTagsAsync();
+        fetched = true;
+    }
+
+    void updateSelectedTag(string tagName)
+    {
+        SelectedTagName = tagName;
+        StateHasChanged();
+    }
+}
