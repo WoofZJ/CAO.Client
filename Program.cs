@@ -12,12 +12,12 @@ builder.Services.AddScoped(sp =>
     var config = sp.GetRequiredService<IConfiguration>();
     string apiBaseAddress = config["ApiSettings:BaseAddress"]
         ?? builder.HostEnvironment.BaseAddress;
-    Console.WriteLine($"Using API base address: {apiBaseAddress}");
     return new HttpClient
     {
         BaseAddress = new Uri(apiBaseAddress)
     };
 });
+builder.Services.AddMemoryCache();
 builder.Services.AddScoped<BlogService>();
 
 await builder.Build().RunAsync();
