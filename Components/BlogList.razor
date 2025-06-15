@@ -1,16 +1,25 @@
+@inject BlogService blogService
+
 <ul class="list bg-base-100 rounded-box shadow-md overflow-hidden py-2">
     <li class="py-2 px-4 text-base flex flex-row items-center justify-between">
         <span>
             推荐文章
+            @if (recommendedBlogs != null)
+            {
+                <span>
+                    - 共 @(recommendedBlogs.Count()) 篇
+                </span>
+
+            }
         </span>
         <div class="join">
-            <button class="join-item btn" onclick="@previousPage" disabled="@(BlogMetaInfoList == null || start <= 1)">
+            <button class="join-item btn" onclick="@previousPage" disabled="@(recommendedBlogs == null || start <= 1)">
                 <Icon Name="tabler:chevrons-left" Width="20" Height="20" />
             </button>
-            <button class="join-item btn" disabled="@(BlogMetaInfoList == null || BlogMetaInfoList.Count() == 0)">
+            <button class="join-item btn" disabled="@(recommendedBlogs == null || recommendedBlogs.Count() == 0)">
                 @start - @end
             </button>
-            <button class="join-item btn" onclick="@nextPage" disabled="@(BlogMetaInfoList == null || end >= BlogMetaInfoList.Count())">
+            <button class="join-item btn" onclick="@nextPage" disabled="@(recommendedBlogs == null || end >= recommendedBlogs.Count())">
                 <Icon Name="tabler:chevrons-right" Width="20" Height="20" />
             </button>
         </div>
@@ -19,11 +28,11 @@
     {
         <Loading Message="正在加载推荐文章..." />
     }
-    else if (BlogMetaInfoList == null)
+    else if (recommendedBlogs == null)
     {
         <Alert Type="error" Message="暂时无法从服务器获取推荐文章！" />
     }
-    else if (BlogMetaInfoList.Count() == 0)
+    else if (recommendedBlogs.Count() == 0)
     {
         <Alert Type="info" Message="暂无推荐文章！" />
     }
@@ -31,7 +40,7 @@
     {
         @for (int i = start; i <= end; ++i)
         {
-            <BlogListItem BlogMetaInfo="@BlogMetaInfoList.ElementAt(i - 1)" />
+            <BlogListItem BlogMetaInfo="@recommendedBlogs.ElementAt(i - 1)" Id="@i"/>
             @if (i != end)
             {
                 <div class="divider m-0"></div>
@@ -42,22 +51,22 @@
 
 @code {
     bool fetched;
-    IEnumerable<BlogMetaInfoDto>? BlogMetaInfoList;
+    IEnumerable<BlogMetaInfoDto>? recommendedBlogs;
     int start, end;
 
     protected override async Task OnInitializedAsync()
     {
-        // todo: Fetch recommended posts from the server
-        await Task.Delay(3000);
+        recommendedBlogs = await blogService.GetRecommendedBlogsAsync();
+        recommendedBlogs = recommendedBlogs?.OrderByDescending(b => (b.IsSticky, b.CreateAt));
         fetched = true;
-        start = BlogMetaInfoList?.Count() > 0 ? 1 : 0;
-        end = Math.Min(5, BlogMetaInfoList?.Count() ?? 0);
+        start = recommendedBlogs?.Count() > 0 ? 1 : 0;
+        end = Math.Min(5, recommendedBlogs?.Count() ?? 0);
         StateHasChanged();
     }
 
     void previousPage()
     {
-        if (BlogMetaInfoList != null && start > 1)
+        if (recommendedBlogs != null && start > 1)
         {
             start -= 5;
             end = start + 4;
@@ -66,11 +75,11 @@
 
     void nextPage()
     {
-        if (BlogMetaInfoList != null && end < BlogMetaInfoList.Count())
+        if (recommendedBlogs != null && end < recommendedBlogs.Count())
         {
             start += 5;
             end += 5;
-            end = Math.Min(end, BlogMetaInfoList.Count());
+            end = Math.Min(end, recommendedBlogs.Count());
         }
     }
 }

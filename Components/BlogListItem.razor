@@ -1,18 +1,18 @@
-<a href="/" class="hover:bg-base-200">
+<a href="@($"/blog/{BlogMetaInfo.Slug}")" class="hover:bg-base-200">
     <li class="flex flex-col lg:flex-row items-center lg:items-start py-2 px-4 gap-x-4">
-        <div class="flex flex-row lg:flex-col items-center gap-y-1 gap-x-1">
+        <div class="flex flex-row lg:min-w-12 lg:flex-col items-center gap-y-1 gap-x-1">
             <div class="text-2xl opacity-50 tabular-nums px-2">
                 @Id.ToString("00")
             </div>
             @if (BlogMetaInfo.IsSticky)
             {
-                <span class="badge badge-accent text-sm font-semibold">
+                <span class="badge badge-accent text-sm font-semibold lg:px-0 lg:w-full">
                     置顶
                 </span>
             }
             @if (isNew)
             {
-                <span class="badge badge-secondary text-sm font-semibold">
+                <span class="badge badge-secondary text-sm font-semibold lg:px-0 lg:w-full">
                     NEW
                 </span>
             }
@@ -20,7 +20,7 @@
         <div class="flex flex-col gap-1">
             <h2 class="text-2xl text-center lg:text-start font-bold">@BlogMetaInfo.Title</h2>
             <div class="flex flex-row gap-x-1 flex-wrap justify-center lg:justify-start">
-                <DateTimeWidget UtcDateTime="@BlogMetaInfo.PublishAt" />
+                <DateTimeWidget UtcDateTime="@BlogMetaInfo.CreateAt" />
                 <TagsWidget Tags="@BlogMetaInfo.Tags" />
             </div>
             <p class="list-col-wrap text-base">
@@ -38,5 +38,5 @@
 @code {
     [Parameter] public int Id { get; set; }
     [Parameter] public BlogMetaInfoDto BlogMetaInfo { get; set; } = new();
-    bool isNew => (DateTime.UtcNow - BlogMetaInfo.PublishAt).TotalDays <= 7;
+    bool isNew => (DateTime.UtcNow - BlogMetaInfo.CreateAt).TotalDays <= 7;
 }
