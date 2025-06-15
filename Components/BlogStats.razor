@@ -1,5 +1,7 @@
+@inject BlogService blogService
+
 <div class="stats-vertical shadow bg-base-200">
-    @foreach (var item in blogStateItems)
+    @foreach (var item in blogStatItems)
     {
         <a class="stat hover:bg-base-300 hover:text-error px-24 lg:px-10 xl:px-12" href="@item.Url">
             <div class="stat-figure">
@@ -18,6 +20,7 @@
                 <span class="font-normal text-xl">&nbsp;@item.Unit</span>
             </div>
             <div class="stat-desc">
+                @item.Description
             </div>
         </a>
     }
@@ -31,7 +34,7 @@
         public string Icon { get; set; }
         public string Url { get; set; }
         public int? Value { get; set; }
-        public string? Description { get; set; }
+        public RenderFragment? Description { get; set; }
 
         public BlogStatItem(string name, string unit, string icon, string url)
         {
@@ -41,9 +44,69 @@
             Url = url;
         }
     };
-    BlogStatItem[] blogStateItems = [
+    BlogStatItem[] blogStatItems = [
         new ("文章", "篇", "tabler:article", "/archive"),
         new ("标签", "个", "tabler:tags", "/tags"),
         new ("留言", "条", "tabler:messages", "/messages"),
     ];
+
+    BlogStatsDto? blogStats;
+
+    protected override async Task OnInitializedAsync()
+    {
+        blogStats = await blogService.GetBlogStatsAsync();
+        if (blogStats != null)
+        {
+            blogStatItems[0].Value = blogStats.BlogsCount;
+            blogStatItems[1].Value = blogStats.TagsCount;
+            blogStatItems[2].Value = blogStats.MessagesCount;
+
+            blogStatItems[0].Description =
+            @<div>
+                本月 |
+            @if (blogStats.MonthlyCreated > 0)
+            {
+                <span class="text-success">
+                    新增
+                    <span class="font-bold">
+                        @(blogStats.MonthlyCreated)
+                    </span>
+                    篇
+                </span>
+                <span> | </span>
+            }
+            @if (blogStats.MonthlyUpdated > 0)
+            {
+                <span class="text-warning">
+                    修改
+                    <span class="font-bold">
+                        @(blogStats.MonthlyUpdated)
+                    </span>
+                    篇
+                </span>
+                <span> | </span>
+            }
+            @if (blogStats.MonthlyCreated == 0 && blogStats.MonthlyUpdated == 0)
+            {
+                <span class="text-error">暂无产出</span>
+                <span> | </span>
+            }
+            </div>;
+            if (blogStats.MostUsedTagCount > 0)
+            {
+                blogStatItems[1].Description =
+                @<div>
+                    标签
+                    <span class="text-primary-content">
+                        「@(blogStats.MostUsedTag)」
+                    </span>
+                    被用了
+                    <span class="font-bold text-primary-content">
+                        @(blogStats.MostUsedTagCount)
+                    </span>
+                    次
+                </div>;
+            }
+        }
+    }
 }

@@ -58,4 +58,20 @@ public class BlogService(HttpClient httpClient)
         return null;
     }
 
+    public async Task<BlogStatsDto?> GetBlogStatsAsync()
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync("blog/stats");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<BlogStatsDto>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching blog stats: {ex.Message}");
+        }
+        return null;
+    }
 }
