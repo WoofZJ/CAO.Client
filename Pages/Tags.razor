@@ -30,9 +30,10 @@ else
                 <div class="flex flex-row flex-wrap items-center justify-center gap-2 mt-4">
                     @foreach (var tag in tagsDto.TagDict.Keys.OrderBy(x => -tagsDto.TagDict[x].Count()))
                     {
-                        <button class="btn text-base" onclick="@(() => updateSelectedTag(@tag))">
+                        <button class="@($"btn text-base {(@tag == @SelectedTagName ? "text-error border-error" : "")}")"
+                            onclick="@(() => updateSelectedTag(@tag))">
                             @tag
-                            <div class="badge badge-lg">
+                            <div class="badge badge-lg text-inherit">
                                 @(tagsDto.TagDict[tag].Count())
                             </div>
                         </button>
