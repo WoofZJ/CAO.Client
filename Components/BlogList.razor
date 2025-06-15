@@ -26,15 +26,15 @@
     </li>
     @if (!fetched)
     {
-        <Loading Message="正在加载推荐文章..." />
+        <Loading Message="正在加载..." />
     }
     else if (recommendedBlogs == null)
     {
-        <Alert Type="error" Message="暂时无法从服务器获取推荐文章！" />
+        <Alert Type="error" Message="服务器暂不可用，过会再来看看吧 ;-;" />
     }
     else if (recommendedBlogs.Count() == 0)
     {
-        <Alert Type="info" Message="暂无推荐文章！" />
+        <Alert Type="info" Message="暂时还没有推荐文章，过几天再来看看吧 >-<" />
     }
     else
     {
