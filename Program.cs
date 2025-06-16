@@ -19,5 +19,6 @@ builder.Services.AddScoped(sp =>
 });
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<BlogService>();
+builder.Services.AddScoped<ViewService>();
 
 await builder.Build().RunAsync();
