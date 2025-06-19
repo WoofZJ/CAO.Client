@@ -56,6 +56,7 @@
         </form>
     </dialog>
 </EditForm>
+
 <script>
     function closeModal() {
         document.getElementById('selectAvatarModal').close();
@@ -65,21 +66,75 @@
     }
 </script>
 
-<div class="">
-    @switch (submitStatus)
-    {
-        case SubmitStatus.Submitting:
-            <Loading Message="提交中..." />
-            break;
-        case SubmitStatus.Success:
-            <Alert Type="success" Message="留言提交成功！" />
-            break;
-        case SubmitStatus.Failed:
-            <Alert Type="error" Message="服务器暂不可用，过会再来看看吧 ;-;" />
-            break;
-    }
+@switch (submitStatus)
+{
+    case SubmitStatus.Submitting:
+        <Loading Message="提交中..." />
+        break;
+    case SubmitStatus.Success:
+        <Alert Type="success" Message="留言提交成功！" />
+        break;
+    case SubmitStatus.Failed:
+        <Alert Type="error" Message="服务器暂不可用，过会再来看看吧 ;-;" />
+        break;
+}
 
-</div>
+@if (myMessages == null)
+{
+    <Alert Type="error" Message="服务器暂不可用，过会再来看看吧 ;-;" />
+}
+else
+{
+    <div class="collapse collapse-open bg-base-100 border-base-300 border">
+        <div class="collapse-title font-semibold text-2xl bg-base-200 hover:bg-base-200">
+            <div class="inline-block align-middle h-full">
+                <Icon Name="tabler:message-user" Width="26" Height="26" />
+            </div>
+            我的留言 - 共 @myMessages.Count() 条
+        </div>
+        <div class="collapse-content">
+            <div class="divider my-2">背景色代表留言状态</div>
+            <div class="flex flex-row items-center gap-2 justify-evenly">
+                <div class="badge bg-red-200 text-base py-4 font-bold">
+                    审核不通过
+                </div>
+                <div class="badge bg-emerald-200 text-base py-4 font-bold">
+                    审核通过
+                </div>
+                <div class="badge bg-amber-200 text-base py-4 font-bold">
+                    审核中
+                </div>
+            </div>
+            <div class="divider my-2"></div>
+            @foreach (var message in myMessages.OrderByDescending(x => x.UploadAt))
+            {
+                string bgColor = message.IsApproved ? "bg-emerald-200" :
+                    (message.IsRead ? "bg-red-200" : "bg-amber-200" );
+                <div class="@("chat mt-2 chat-start " + bgColor)">
+                    <div class="chat-image avatar">
+                        <div class="w-16 rounded-full border-neutral-300 border-2">
+                            <img src="@($"/images/avatars/{message.AvatarId}.png")" />
+                        </div>
+                    </div>
+                    <div class="chat-header">
+                        <span class="text-base font-semibold">
+                            @(string.IsNullOrEmpty(message.Nickname) ? "匿名访客" : message.Nickname)
+                        </span>
+                    </div>
+                    <div class="chat-bubble">
+                        @message.Message
+                    </div>
+                    <div class="chat-footer opacity-50">
+                        <div class="text-xs">
+                            留言于
+                            @message.UploadAt.AddHours(8).ToString("yyyy/MM/dd HH:mm:ss")
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
 
 @code {
     public class FormModel
@@ -101,6 +156,7 @@
     }
     int selectedAvatar;
     SubmitStatus submitStatus = SubmitStatus.NotSubmitted;
+    IEnumerable<MessageGetDto>? myMessages;
 
     async Task HandleValidSubmit()
     {
@@ -116,6 +172,7 @@
         {
             submitStatus = SubmitStatus.Failed;
         }
+        await UpdateSelfMessagesAsync();
         StateHasChanged();
     }
 
@@ -126,11 +183,18 @@
         await jsRuntime.InvokeVoidAsync("closeModal");
     }
 
+    async Task UpdateSelfMessagesAsync()
+    {
+        myMessages = await messageService.GetSelfMessagesAsync();
+        StateHasChanged();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         MessageDto messageDto = await messageService.GetLocalMessage();
         formModel.Nickname = messageDto.Nickname;
         formModel.Email = messageDto.Email;
         selectedAvatar = messageDto.AvatarId;
+        await UpdateSelfMessagesAsync();
     }
 }

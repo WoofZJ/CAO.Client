@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.JSInterop;
 using CAO.Client.Dtos;
 
@@ -40,6 +39,34 @@ public class MessageService(HttpClient httpClient, IJSRuntime jsRuntime)
             Console.WriteLine($"Error fetching data from message/put: {ex.Message}");
         }
         return false;
+    }
+
+    public async Task<List<MessageGetDto>?> GetAllMessagesAsync()
+    {
+        try
+        {
+            var response = await _httpClient.GetFromJsonAsync<List<MessageGetDto>>($"message/all?visitorId={await GetOrCreateVisitorId()}");
+            return response;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching data from message/all: {ex.Message}");
+        }
+        return null;
+    }
+
+    public async Task<IEnumerable<MessageGetDto>?> GetSelfMessagesAsync()
+    {
+        try
+        {
+            var response = await _httpClient.GetFromJsonAsync<IEnumerable<MessageGetDto>>($"message/self?visitorId={await GetOrCreateVisitorId()}");
+            return response;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching data from message/self: {ex.Message}");
+        }
+        return null;
     }
 
     public async Task<MessageDto> GetLocalMessage()

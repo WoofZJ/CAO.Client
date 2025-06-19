@@ -1,0 +1,41 @@
+@inject MessageService messageService
+
+<div class="collapse collapse-open bg-base-100 border-base-300 border">
+    <div class="collapse-title font-semibold text-2xl bg-base-200 hover:bg-base-200">
+        <div class="inline-block align-middle h-full">
+            <Icon Name="tabler:messages" Width="26" Height="26" />
+        </div>
+        留言 - 共 @(Messages.Count()) 条
+    </div>
+    <div class="collapse-content">
+        @foreach (var message in Messages.OrderByDescending(x => x.UploadAt))
+        {
+            <div class="@("chat mt-2 "+ (message.IsSelf ? "chat-end" : "chat-start"))">
+                <div class="chat-image avatar">
+                    <div class="w-16 rounded-full border-neutral-300 border-2">
+                        <img src="@($"/images/avatars/{message.AvatarId}.png")" />
+                    </div>
+                </div>
+                <div class="chat-header">
+                    <span class="text-base font-semibold">
+                        @(string.IsNullOrEmpty(message.Nickname) ? "匿名访客" : message.Nickname)
+                    </span>
+                </div>
+                <div class="chat-bubble">
+                    @message.Message
+                </div>
+                <div class="chat-footer opacity-50">
+                    <div class="text-xs">
+                        留言于
+                        @message.UploadAt.AddHours(8).ToString("yyyy/MM/dd HH:mm:ss")
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IEnumerable<MessageGetDto> Messages { get; set; } = [];
+}
