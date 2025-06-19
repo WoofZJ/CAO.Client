@@ -95,13 +95,13 @@ else
         <div class="collapse-content">
             <div class="divider my-2">背景色代表留言状态</div>
             <div class="flex flex-row items-center gap-2 justify-evenly">
-                <div class="badge bg-red-200 text-base py-4 font-bold">
+                <div class="badge bg-red-200 text-base py-4 font-bold text-black">
                     审核不通过
                 </div>
-                <div class="badge bg-emerald-200 text-base py-4 font-bold">
+                <div class="badge bg-emerald-200 text-base py-4 font-bold text-black">
                     审核通过
                 </div>
-                <div class="badge bg-amber-200 text-base py-4 font-bold">
+                <div class="badge bg-amber-200 text-base py-4 font-bold text-black">
                     审核中
                 </div>
             </div>
@@ -110,7 +110,7 @@ else
             {
                 string bgColor = message.IsApproved ? "bg-emerald-200" :
                     (message.IsRead ? "bg-red-200" : "bg-amber-200" );
-                <div class="@("chat mt-2 chat-start " + bgColor)">
+                <div class="@("chat mt-2 chat-start text-black " + bgColor)">
                     <div class="chat-image avatar">
                         <div class="w-16 rounded-full border-neutral-300 border-2">
                             <img src="@($"/images/avatars/{message.AvatarId}.png")" />
